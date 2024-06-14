@@ -6,6 +6,8 @@ const ChatInterface = () => {
   const [input, setInput] = useState('');
   const [loading, setLoading] = useState(false);
   const [model, setModel] = useState('gpt-3.5-turbo');
+  const [scrapeUrl, setScrapeUrl] = useState('');
+  const [scrapeData, setScrapeData] = useState(null);
 
   const configuration = new Configuration({
     apiKey: process.env.REACT_APP_OPENAI_API_KEY,
@@ -31,6 +33,21 @@ const ChatInterface = () => {
     } finally {
       setLoading(false);
       setInput('');
+    }
+  };
+
+  const handleScrape = async () => {
+    if (!scrapeUrl.trim()) return;
+    setLoading(true);
+
+    try {
+      const response = await fetch(`/api/scrape?url=${encodeURIComponent(scrapeUrl)}`);
+      const data = await response.json();
+      setScrapeData(data);
+    } catch (error) {
+      console.error('Error scraping URL:', error);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -65,6 +82,23 @@ const ChatInterface = () => {
           <option value="text-davinci-003">Davinci</option>
         </select>
       </div>
+      <div className="scrape-controls">
+        <input
+          type="text"
+          value={scrapeUrl}
+          onChange={(e) => setScrapeUrl(e.target.value)}
+          placeholder="Enter URL to scrape..."
+        />
+        <button onClick={handleScrape} disabled={loading}>
+          {loading ? 'Scraping...' : 'Scrape'}
+        </button>
+      </div>
+      {scrapeData && (
+        <div className="scrape-results">
+          <h2>Scrape Results:</h2>
+          <pre>{JSON.stringify(scrapeData, null, 2)}</pre>
+        </div>
+      )}
     </div>
   );
 };

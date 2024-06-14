@@ -2,14 +2,14 @@ const puppeteer = require('puppeteer');
 const fs = require('fs');
 const path = require('path');
 
-async function scrapeFacebookPage() {
+async function scrapeFacebookPage(url) {
   let browser;
   try {
     console.log('Launching browser...');
     browser = await puppeteer.launch({ headless: true });
     const page = await browser.newPage();
-    console.log('Navigating to Facebook page...');
-    await page.goto('https://m.facebook.com/MaxValUFiji/', { waitUntil: 'networkidle2' });
+    console.log(`Navigating to ${url}...`);
+    await page.goto(url, { waitUntil: 'networkidle2' });
 
     // Scroll down to load more posts
     console.log('Scrolling to load more posts...');
@@ -37,7 +37,7 @@ async function scrapeFacebookPage() {
     console.log('Data extraction complete.');
     return data;
   } catch (error) {
-    console.error('Error scraping Facebook page:', error);
+    console.error('Error scraping page:', error);
     return [];
   } finally {
     if (browser) {
