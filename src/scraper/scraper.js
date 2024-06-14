@@ -1,12 +1,12 @@
 const puppeteer = require('puppeteer');
 
 async function scrapeFacebookPage() {
-  const browser = await puppeteer.launch();
+  const browser = await puppeteer.launch({ headless: true });
   const page = await browser.newPage();
-  await page.goto('https://m.facebook.com/MaxValUFiji/');
+  await page.goto('https://m.facebook.com/MaxValUFiji/', { waitUntil: 'networkidle2' });
 
-  // Wait for the posts to load
-  await page.waitForSelector('div.story_body_container');
+  // Scroll down to load more posts
+  await autoScroll(page);
 
   // Extract the flyers and images
   const data = await page.evaluate(() => {
@@ -30,4 +30,24 @@ async function scrapeFacebookPage() {
   return data;
 }
 
-scrapeFacebookPage().then(data => console.log(data)).catch(console.error);
+// Helper function to auto-scroll the page
+async function autoScroll(page) {
+  await page.evaluate(async () => {
+    await new Promise((resolve, reject) => {
+      let totalHeight = 0;
+      const distance = 100;
+      const timer = setInterval(() => {
+        const scrollHeight = document.body.scrollHeight;
+        window.scrollBy(0, distance);
+        totalHeight += distance;
+
+        if (totalHeight >= scrollHeight) {
+          clearInterval(timer);
+          resolve();
+        }
+      }, 100);
+    });
+  });
+}
+
+module.exports = { scrapeFacebookPage };

@@ -14,12 +14,16 @@ const Index = () => {
     <div className="container mx-auto p-4">
       <h1 className="text-3xl font-bold underline mb-4">Welcome to the Grocery Scraper</h1>
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        {data.map((item, index) => (
-          <div key={index} className="border p-4 rounded shadow">
-            <img src={item.src} alt={item.alt} className="w-full h-auto" />
-            <p className="mt-2">{item.alt}</p>
-          </div>
-        ))}
+        {data.length > 0 ? (
+          data.map((item, index) => (
+            <div key={index} className="border p-4 rounded shadow">
+              <img src={item.src} alt={item.alt} className="w-full h-auto" />
+              <p className="mt-2">{item.alt}</p>
+            </div>
+          ))
+        ) : (
+          <p>No data available. Please try again later.</p>
+        )}
       </div>
     </div>
   );
