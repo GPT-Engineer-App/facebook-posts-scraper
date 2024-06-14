@@ -7,9 +7,14 @@ const app = express();
 const port = 3000;
 
 app.get('/api/scrape', async (req, res) => {
+  const { url } = req.query;
+  if (!url) {
+    return res.status(400).json({ error: 'URL is required' });
+  }
+
   try {
-    console.log('Scraping data...');
-    const data = await scraper.scrapeFacebookPage();
+    console.log(`Scraping data from ${url}...`);
+    const data = await scraper.scrapeFacebookPage(url);
     if (data.length === 0) {
       throw new Error('No data scraped');
     }
