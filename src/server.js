@@ -6,10 +6,13 @@ const path = require('path');
 const app = express();
 const port = 3000;
 
-app.get('/api/scrape', async (req, res) => {
+app.use(express.json());
+
+app.post('/api/scrape', async (req, res) => {
+  const { url } = req.body;
   try {
-    console.log('Scraping data...');
-    const data = await scraper.scrapeFacebookPage();
+    console.log('Scraping data from URL:', url);
+    const data = await scraper.scrapeFacebookPage(url);
     if (data.length === 0) {
       throw new Error('No data scraped');
     }
